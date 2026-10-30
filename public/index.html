@@ -426,7 +426,7 @@
                         </div>
                     </div>
 
-                    <!-- AI Question Generation Helper Banner -->
+                    <!-- AI Question Formatting Helper Banner -->
                     <div class="ai-prompt-banner glass-panel">
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
                             <div style="display:flex;align-items:center;gap:0.75rem;">
@@ -437,10 +437,10 @@
                                 </div>
                                 <div>
                                     <strong style="font-size:0.95rem;display:flex;align-items:center;gap:0.4rem;">
-                                        <span>Generate from Notes with AI</span>
+                                        <span>Reformat Questions with AI</span>
                                         <span class="nav-badge" style="border-color:#a855f7;color:#c084fc;font-size:0.68rem;padding:0.1rem 0.35rem;">ChatGPT · Gemini · Claude</span>
                                     </strong>
-                                    <span style="font-size:0.8rem;color:var(--text-muted);display:block;margin-top:0.15rem;">Copy our AI prompt, send it to your AI with your slides or notes, and paste the output below!</span>
+                                    <span style="font-size:0.8rem;color:var(--text-muted);display:block;margin-top:0.15rem;">Have questions from a PDF, reviewer, or notes? Copy our prompt, send it to AI with your questions, and paste the reformatted output below!</span>
                                 </div>
                             </div>
                             <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
@@ -450,7 +450,7 @@
                                 </button>
                                 <button type="button" id="copy-ai-quick-btn" class="primary-btn" style="padding:0.45rem 0.95rem;font-size:0.82rem;display:inline-flex;align-items:center;gap:0.45rem;background:linear-gradient(135deg, #6366f1, #a855f7);border:none;">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                    <span id="copy-ai-quick-text">Copy AI Prompt</span>
+                                    <span id="copy-ai-quick-text">Copy Reformat Prompt</span>
                                 </button>
                             </div>
                         </div>
@@ -597,7 +597,7 @@
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
                         </svg>
-                        <h3 style="margin:0;font-size:1.15rem;">AI Quiz Prompt Generator</h3>
+                        <h3 style="margin:0;font-size:1.15rem;">AI Question Reformat Helper</h3>
                     </div>
                     <button id="close-ai-prompt-modal-btn" class="icon-btn" aria-label="Close modal">&times;</button>
                 </div>
@@ -610,46 +610,41 @@
                         </div>
                         <div class="glass-panel" style="padding:0.65rem 0.85rem;border-radius:0.6rem;background:rgba(255,255,255,0.03);">
                             <div style="font-size:0.75rem;font-weight:700;color:var(--accent);margin-bottom:0.2rem;">STEP 2</div>
-                            <div style="font-size:0.82rem;font-weight:500;">Paste into AI with Notes</div>
+                            <div style="font-size:0.82rem;font-weight:500;">Paste into AI with Your Questions</div>
                         </div>
                         <div class="glass-panel" style="padding:0.65rem 0.85rem;border-radius:0.6rem;background:rgba(255,255,255,0.03);">
                             <div style="font-size:0.75rem;font-weight:700;color:var(--correct);margin-bottom:0.2rem;">STEP 3</div>
-                            <div style="font-size:0.82rem;font-weight:500;">Paste Output into Box</div>
+                            <div style="font-size:0.82rem;font-weight:500;">Click "Copy Code" & Paste Below</div>
                         </div>
                     </div>
 
                     <!-- Customization Controls -->
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;margin-bottom:1rem;background:rgba(255,255,255,0.02);padding:0.85rem;border-radius:0.6rem;border:1px solid var(--glass-border);">
                         <div>
-                            <label style="display:block;font-size:0.78rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted);">Quiz Type</label>
+                            <label style="display:block;font-size:0.78rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted);">Format Style</label>
                             <select id="ai-prompt-type" style="width:100%;padding:0.4rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);font-size:0.85rem;">
-                                <option value="mcq">Multiple Choice Questions (Recommended)</option>
-                                <option value="flashcards">Flashcards / Terms (Term & Def)</option>
+                                <option value="mcq">Multiple Choice (Pipe with * Answer Key)</option>
+                                <option value="flashcards">Flashcards / 2-Column (Term | Definition)</option>
                                 <option value="aiken">Academic Aiken Format</option>
                             </select>
                         </div>
                         <div>
-                            <label style="display:block;font-size:0.78rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted);">Question Count</label>
-                            <select id="ai-prompt-count" style="width:100%;padding:0.4rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);font-size:0.85rem;">
-                                <option value="10">10 Questions</option>
-                                <option value="5">5 Questions</option>
-                                <option value="15">15 Questions</option>
-                                <option value="20">20 Questions</option>
-                                <option value="all">Comprehensive (Cover All Topics)</option>
+                            <label style="display:block;font-size:0.78rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted);">Explanations</label>
+                            <select id="ai-prompt-exp" style="width:100%;padding:0.4rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);font-size:0.85rem;">
+                                <option value="add_missing">Add Step-by-Step Explanation if Missing</option>
+                                <option value="keep_only">Keep Original Explanations Only</option>
                             </select>
                         </div>
-                        <div>
-                            <label style="display:block;font-size:0.78rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted);">Difficulty Level</label>
-                            <select id="ai-prompt-diff" style="width:100%;padding:0.4rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);font-size:0.85rem;">
-                                <option value="rigorous exam">Board Exam / Rigorous Conceptual</option>
-                                <option value="intermediate college">College / Intermediate</option>
-                                <option value="introductory">Introductory / High School</option>
-                            </select>
-                        </div>
-                        <div style="display:flex;align-items:flex-end;padding-bottom:0.25rem;">
+                        <div style="display:flex;align-items:center;padding-top:0.25rem;">
                             <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;cursor:pointer;">
                                 <input type="checkbox" id="ai-prompt-include-latex" checked>
-                                <span>Include LaTeX Formulas ($x^2$)</span>
+                                <span>Convert Formulas to LaTeX ($x^2$)</span>
+                            </label>
+                        </div>
+                        <div style="display:flex;align-items:center;padding-top:0.25rem;">
+                            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;cursor:pointer;" title="Places output inside a raw code block so ChatGPT/Claude shows a 'Copy Code' button and doesn't render uncopyable KaTeX graphics">
+                                <input type="checkbox" id="ai-prompt-code-block" checked>
+                                <span>Wrap in Code Block (For 1-Click Copy)</span>
                             </label>
                         </div>
                     </div>

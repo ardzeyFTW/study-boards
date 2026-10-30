@@ -60,9 +60,9 @@ export class ImportUI {
         this.closeAiPromptModalBtn = doc ? doc.getElementById('close-ai-prompt-modal-btn') : null;
         this.closeAiPromptBottomBtn = doc ? doc.getElementById('close-ai-prompt-bottom-btn') : null;
         this.aiPromptTypeSelect = doc ? doc.getElementById('ai-prompt-type') : null;
-        this.aiPromptCountSelect = doc ? doc.getElementById('ai-prompt-count') : null;
-        this.aiPromptDiffSelect = doc ? doc.getElementById('ai-prompt-diff') : null;
+        this.aiPromptExpSelect = doc ? doc.getElementById('ai-prompt-exp') : null;
         this.aiPromptLatexCheckbox = doc ? doc.getElementById('ai-prompt-include-latex') : null;
+        this.aiPromptCodeBlockCheckbox = doc ? doc.getElementById('ai-prompt-code-block') : null;
         this.aiPromptPreview = doc ? doc.getElementById('ai-prompt-preview') : null;
         this.copyAiModalBtn = doc ? doc.getElementById('copy-ai-modal-btn') : null;
         this.aiPromptCopiedMsg = doc ? doc.getElementById('ai-prompt-copied-msg') : null;
@@ -168,8 +168,13 @@ export class ImportUI {
         // AI Prompt Banner Quick-Copy
         if (this.copyAiQuickBtn) {
             this.copyAiQuickBtn.onclick = () => {
-                const promptText = this.generateAIPrompt('mcq', '10', 'rigorous exam', true);
-                this.copyTextToClipboard(promptText, 'AI Prompt copied! Paste into ChatGPT, Claude or Gemini.');
+                const promptText = this.generateAIPrompt({
+                    type: 'mcq',
+                    explanationMode: 'add_missing',
+                    includeLatex: true,
+                    wrapInCodeBlock: true
+                });
+                this.copyTextToClipboard(promptText, 'AI Reformat Prompt copied! Paste into ChatGPT, Claude or Gemini with your questions.');
                 if (this.copyAiQuickText) {
                     const originalText = this.copyAiQuickText.textContent;
                     this.copyAiQuickText.textContent = '✓ Copied!';
@@ -201,9 +206,9 @@ export class ImportUI {
         // Live preview updates on dropdown changes
         const updateHandler = () => this.updateAiPromptPreview();
         if (this.aiPromptTypeSelect) this.aiPromptTypeSelect.onchange = updateHandler;
-        if (this.aiPromptCountSelect) this.aiPromptCountSelect.onchange = updateHandler;
-        if (this.aiPromptDiffSelect) this.aiPromptDiffSelect.onchange = updateHandler;
+        if (this.aiPromptExpSelect) this.aiPromptExpSelect.onchange = updateHandler;
         if (this.aiPromptLatexCheckbox) this.aiPromptLatexCheckbox.onchange = updateHandler;
+        if (this.aiPromptCodeBlockCheckbox) this.aiPromptCodeBlockCheckbox.onchange = updateHandler;
 
         // AI Prompt Modal Copy Action
         if (this.copyAiModalBtn) {
@@ -621,82 +626,96 @@ EXPLANATION: Force equals mass times acceleration.`;
        ====================================================================== */
 
     /**
-     * Generates a tailored, copy-ready system prompt for LLMs (ChatGPT, Gemini, Claude).
-     * @param {string} type - 'mcq' | 'flashcards' | 'aiken'
-     * @param {string} count - '5' | '10' | '15' | '20' | 'all'
-     * @param {string} difficulty - 'rigorous exam' | 'intermediate college' | 'introductory'
-     * @param {boolean} includeLatex
-     * @returns {string}
+     * Generates a copy-ready reformatting prompt for LLMs (ChatGPT, Gemini, Claude).
+     * Focuses on converting existing user questions/reviewers into Study Boards syntax.
      */
-    generateAIPrompt(type = 'mcq', count = '10', difficulty = 'rigorous exam', includeLatex = true) {
-        const countText = count === 'all'
-            ? 'a comprehensive set covering all key concepts, equations, and definitions'
-            : `${count}`;
+    generateAIPrompt(options = {}) {
+        let type = 'mcq';
+        let explanationMode = 'add_missing';
+        let includeLatex = true;
+        let wrapInCodeBlock = true;
+
+        if (typeof options === 'string') {
+            type = options;
+            includeLatex = arguments[3] !== undefined ? arguments[3] : true;
+        } else if (typeof options === 'object' && options !== null) {
+            type = options.type || 'mcq';
+            explanationMode = options.explanationMode || 'add_missing';
+            includeLatex = options.includeLatex !== undefined ? options.includeLatex : true;
+            wrapInCodeBlock = options.wrapInCodeBlock !== undefined ? options.wrapInCodeBlock : true;
+        }
 
         const latexRule = includeLatex
-            ? 'Format all mathematical equations, variables, units, and formulas using inline LaTeX enclosed in single dollar signs (e.g. $V = IR$, $\\omega = 2\\pi f$, $\\frac{1}{2}mv^2$).'
+            ? 'Format all mathematical equations, variables, Greek letters, and units using inline LaTeX enclosed in single dollar signs (e.g. $V = IR$, $10\\ \\Omega$, $10\\ \\mu\\text{F}$, $\\zeta = \\frac{R}{2}\\sqrt{\\frac{C}{L}}$). NEVER write bare LaTeX commands outside of $ and NEVER use display $$...$$ block math.'
             : 'Write all numbers, units, and formulas using standard plain text without LaTeX.';
 
+        const codeBlockRule = wrapInCodeBlock
+            ? 'Wrap the entire output inside a single raw text code block (```text ... ```). This prevents the AI chat interface from rendering formulas into uncopyable math graphics, and provides a 1-click "Copy Code" button.'
+            : 'Output as raw text without markdown code block fences.';
+
+        const explanationRule = explanationMode === 'add_missing'
+            ? 'Preserve original explanations if provided. If an explanation is missing, generate a concise, step-by-step conceptual or mathematical explanation at the end.'
+            : 'Preserve original explanations at the end where present; otherwise leave the explanation field empty.';
+
         if (type === 'flashcards') {
-            return `You are an expert study flashcard creator. Extract ${countText} terms and definitions at the ${difficulty} level from the reference text or topic provided below.
+            return `Please reformat ALL of the terms, vocabulary, or review items provided below into the exact two-column format required by my study app. Do not skip any items, and preserve all original definitions.
 
 Strict Output Rules:
-1. Output ONLY the raw flashcards, one card per line.
-2. DO NOT wrap the output in markdown code blocks (NO \`\`\` or \`\`\`text).
-3. DO NOT include headers, numbering, or introductory/concluding filler.
+1. Reformat and output ALL provided items, one item per line.
+2. ${codeBlockRule}
+3. DO NOT include headers, numbering, or conversational filler.
 4. Each line MUST strictly follow this two-column format:
    Term | Detailed Definition or Explanation
 5. ${latexRule}
 
---- [PASTE YOUR NOTES / SLIDES / TOPIC / TRANSCRIPT BELOW] ---
+--- [PASTE YOUR TERMS / FLASHCARDS / REVIEWER BELOW] ---
 `;
         }
 
         if (type === 'aiken') {
-            return `You are an academic test writer. Generate ${countText} multiple-choice questions at the ${difficulty} level based on the material or topic provided below.
+            return `Please reformat ALL of the multiple-choice questions provided below into standard Aiken format. Do not skip any questions, do not invent new questions, and preserve all original choices and answer keys.
 
 Strict Output Rules:
-1. Output ONLY questions in standard Aiken format, separated by a blank line.
-2. DO NOT wrap the output in markdown code blocks (NO \`\`\` or \`\`\`text).
-3. DO NOT include headers, conversational filler, or commentary.
-4. Each question must have the question statement on the first line, followed by choices prefixed with A., B., C., D., then ANSWER: [Letter], and EXPLANATION: [Reasoning].
-5. Example format:
-   What is Ohm's Law?
-   A. V = IR
-   B. I = V/R^2
-   C. P = VI
-   D. V = I/R
-   ANSWER: A
-   EXPLANATION: Ohm's law defines the linear relationship between voltage and current.
-6. ${latexRule}
+1. Reformat ALL provided questions in standard Aiken format, separated by a blank line between each question.
+2. ${codeBlockRule}
+3. DO NOT include question numbering (remove "1.", "2.", "Q1:"), headers, or conversational text.
+4. Each question must follow this exact structure:
+   Question statement
+   A. Choice 1
+   B. Choice 2
+   C. Choice 3
+   D. Choice 4
+   ANSWER: [Letter]
+   EXPLANATION: [Reasoning]
+5. ${latexRule}
 
---- [PASTE YOUR NOTES / SLIDES / TOPIC / TRANSCRIPT BELOW] ---
+--- [PASTE YOUR QUESTIONS / TEST MATERIAL BELOW] ---
 `;
         }
 
-        // Default: MCQ Pipe with asterisk answer key and standalone explanation
-        return `You are an expert exam question author. Generate ${countText} multiple-choice questions at the ${difficulty} level based on the reference notes or topic provided below.
+        // Default: MCQ Pipe format with asterisk answer key
+        return `Please reformat ALL of the questions provided below into the exact pipe-delimited format required by my quiz application. Do not skip any questions, do not invent new questions, and preserve all original questions, choices, and answer keys.
 
 Strict Output Rules:
-1. Output ONLY the raw questions, one question per line.
-2. DO NOT wrap the output in markdown code blocks (NO \`\`\` or \`\`\`text).
-3. DO NOT include headers, numbering (no "1.", "2."), or conversational filler.
+1. Reformat and output ALL provided questions, one question per line.
+2. ${codeBlockRule}
+3. DO NOT include headers, category names, question numbering (remove "1.", "2.", "Q1:"), or conversational intro/outro text.
 4. Each line MUST strictly follow this pipe-delimited format:
    Question Text | *Correct Choice | Distractor 1 | Distractor 2 | Distractor 3 | Detailed step-by-step explanation
-5. Prefix the exact correct choice with an asterisk (*) so the system marks it as the answer key.
-6. Provide exactly 4 choices (1 correct with *, 3 plausible wrong options) followed by a clear, standalone explanation at the end.
+5. Prefix the exact correct choice with an asterisk (*) so the system marks it as the answer key (e.g., *Option A).
+6. ${explanationRule}
 7. ${latexRule}
 
---- [PASTE YOUR NOTES / SLIDES / TOPIC / TRANSCRIPT BELOW] ---
+--- [PASTE YOUR QUESTIONS / TEST MATERIAL BELOW] ---
 `;
     }
 
     getCurrentAiPrompt() {
         const type = this.aiPromptTypeSelect ? this.aiPromptTypeSelect.value : 'mcq';
-        const count = this.aiPromptCountSelect ? this.aiPromptCountSelect.value : '10';
-        const diff = this.aiPromptDiffSelect ? this.aiPromptDiffSelect.value : 'rigorous exam';
-        const latex = this.aiPromptLatexCheckbox ? this.aiPromptLatexCheckbox.checked : true;
-        return this.generateAIPrompt(type, count, diff, latex);
+        const explanationMode = this.aiPromptExpSelect ? this.aiPromptExpSelect.value : 'add_missing';
+        const includeLatex = this.aiPromptLatexCheckbox ? this.aiPromptLatexCheckbox.checked : true;
+        const wrapInCodeBlock = this.aiPromptCodeBlockCheckbox ? this.aiPromptCodeBlockCheckbox.checked : true;
+        return this.generateAIPrompt({ type, explanationMode, includeLatex, wrapInCodeBlock });
     }
 
     updateAiPromptPreview() {

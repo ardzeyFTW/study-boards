@@ -718,13 +718,29 @@ export function parseJsonText(rawText, options = {}) {
 }
 
 /**
+ * Strips outer markdown code block fences (e.g. ```text ... ``` or ``` ... ```)
+ * so users can paste directly from AI code blocks without syntax errors.
+ * @param {string} rawText
+ * @returns {string}
+ */
+export function stripMarkdownCodeFences(rawText) {
+    if (!rawText || typeof rawText !== 'string') return '';
+    let cleaned = rawText.trim();
+    if (cleaned.startsWith('```')) {
+        cleaned = cleaned.replace(/^```[a-zA-Z0-9_-]*\r?\n?/, '');
+        cleaned = cleaned.replace(/\r?\n?```$/, '');
+    }
+    return cleaned.trim();
+}
+
+/**
  * Master entry point for parsing any supported question import format.
  * @param {string} rawText
  * @param {Object} [options={}]
  * @returns {Object} ParseResult
  */
 export function parseImportText(rawText, options = {}) {
-    const trimmed = (rawText || '').trim();
+    const trimmed = stripMarkdownCodeFences(rawText);
     if (!trimmed) {
         return {
             success: true,
