@@ -485,7 +485,7 @@ class StudyBoardsApp {
         if (hintBtn && hintBox) {
             hintBtn.onclick = () => {
                 if (this.activeQuestion && this.activeQuestion.explanation) {
-                    hintBox.textContent = `💡 Hint: ${this.activeQuestion.explanation.slice(0, 100)}...`;
+                    hintBox.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.3rem;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#f59e0b;"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5z"></path></svg><strong>Hint:</strong> ${escapeHtml(this.activeQuestion.explanation.slice(0, 100))}...</span>`;
                     hintBox.classList.remove('hidden');
                 }
             };
@@ -566,7 +566,7 @@ class StudyBoardsApp {
 
             if (totalAnsEl) totalAnsEl.textContent = Number(stats.totalQuestionsAnswered || 0).toLocaleString();
             if (masteredEl) masteredEl.textContent = Number(stats.masteredQuestionsCount || 0).toLocaleString();
-            if (streakEl) streakEl.textContent = `${streak}🔥`;
+            if (streakEl) streakEl.textContent = `${streak}`;
         } catch (_) {}
     }
 
@@ -958,10 +958,10 @@ class StudyBoardsApp {
         if (timeVal) timeVal.textContent = duration;
 
         if (this.quizMode === 'mastery') {
-            if (titleEl) titleEl.textContent = '🏆 100% Mastered!';
+            if (titleEl) titleEl.textContent = '100% Mastered!';
             if (subtitleEl) subtitleEl.textContent = `All questions in "${this.currentSet.title}" answered correctly twice consecutively.`;
         } else {
-            if (titleEl) titleEl.textContent = accuracy >= 80 ? '🎉 Exam Completed!' : '📚 Quiz Completed!';
+            if (titleEl) titleEl.textContent = accuracy >= 80 ? 'Exam Completed!' : 'Quiz Completed!';
             if (subtitleEl) subtitleEl.textContent = `Speedrun linear results for "${this.currentSet.title}".`;
         }
 
@@ -1002,8 +1002,10 @@ class StudyBoardsApp {
                 <div class="glass-panel" style="padding:1rem;margin-bottom:0.75rem;border-left:4px solid ${item.isCorrect ? 'var(--correct)' : 'var(--wrong)'};">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
                         <span style="font-weight:600;font-size:0.85rem;color:var(--text-dim);">Question ${idx + 1}</span>
-                        <span style="font-weight:600;font-size:0.8rem;color:${item.isCorrect ? 'var(--correct)' : 'var(--wrong)'};">
-                            ${item.isCorrect ? '✓ Correct' : '✕ Mistake'}
+                        <span style="display:inline-flex;align-items:center;gap:0.3rem;font-weight:600;font-size:0.8rem;color:${item.isCorrect ? 'var(--correct)' : 'var(--wrong)'};">
+                            ${item.isCorrect 
+                                ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Correct' 
+                                : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mistake'}
                         </span>
                     </div>
                     <p style="font-weight:500;margin-bottom:0.5rem;">${item.question.question_text}</p>
@@ -1018,8 +1020,9 @@ class StudyBoardsApp {
                         </div>
                     ` : ''}
                     ${item.question.explanation ? `
-                        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--glass-border);">
-                            💡 ${item.question.explanation}
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--glass-border);display:flex;align-items:flex-start;gap:0.35rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5z"></path></svg>
+                            <span>${item.question.explanation}</span>
                         </div>
                     ` : ''}
                 </div>

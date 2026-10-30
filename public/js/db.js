@@ -292,7 +292,7 @@ export async function getUserProfile() {
 
         store.transaction.oncomplete = () => {
             resolve({
-                profile: profile || { key: 'profile', displayName: 'Student', avatar: '⚡', createdAt: Date.now() },
+                profile: profile || { key: 'profile', displayName: 'Student', avatar: 'user', createdAt: Date.now() },
                 stats: stats || {
                     key: 'stats',
                     totalQuestionsAnswered: 0,

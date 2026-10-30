@@ -201,19 +201,29 @@ export class SetManager {
                     </div>
                     <div class="set-card-actions">
                         <button class="set-action-btn speedrun" data-action="speedrun" data-set-id="${set.id}" title="Test Mode (Speedrun Exam)">
-                            ⚡ Speedrun
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="color:#f59e0b;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span>Speedrun</span>
                         </button>
                         <button class="set-action-btn mastery" data-action="mastery" data-set-id="${set.id}" title="Mastery Mode (Spaced Repetition)">
-                            🎯 Mastery
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            <span>Mastery</span>
                         </button>
                     </div>
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.75rem;padding-top:0.5rem;border-top:1px solid var(--glass-border);">
                         <button class="btn-link" data-action="inspect" data-set-id="${set.id}" style="font-size:0.8rem;background:none;border:none;color:var(--primary);cursor:pointer;">Inspect Set</button>
                         <div style="display:flex;gap:0.4rem;">
-                            <button class="nav-icon-btn" data-action="export" data-set-id="${set.id}" title="Export JSON" style="width:28px;height:28px;font-size:0.75rem;">💾</button>
-                            <button class="nav-icon-btn" data-action="duplicate" data-set-id="${set.id}" title="Duplicate" style="width:28px;height:28px;font-size:0.75rem;">📋</button>
-                            <button class="nav-icon-btn" data-action="rename" data-set-id="${set.id}" title="Rename" style="width:28px;height:28px;font-size:0.75rem;">✏️</button>
-                            <button class="nav-icon-btn" data-action="delete" data-set-id="${set.id}" title="Delete" style="width:28px;height:28px;font-size:0.75rem;color:var(--wrong);">🗑️</button>
+                            <button class="nav-icon-btn" data-action="export" data-set-id="${set.id}" title="Export JSON" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </button>
+                            <button class="nav-icon-btn" data-action="duplicate" data-set-id="${set.id}" title="Duplicate" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            </button>
+                            <button class="nav-icon-btn" data-action="rename" data-set-id="${set.id}" title="Rename" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                            <button class="nav-icon-btn" data-action="delete" data-set-id="${set.id}" title="Delete" style="width:28px;height:28px;color:var(--wrong);display:inline-flex;align-items:center;justify-content:center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>

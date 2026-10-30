@@ -277,13 +277,19 @@ EXPLANATION: Force equals mass times acceleration.`;
         if (totalBadge) totalBadge.textContent = `${stats.total} Questions`;
 
         if (this.valValidCount) {
-            this.valValidCount.textContent = this.valValidCount.id === 'val-valid' ? `🟢 ${stats.valid} Valid` : `${stats.valid}`;
+            this.valValidCount.innerHTML = this.valValidCount.id === 'val-valid' 
+                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" style="vertical-align:-1px;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> ${stats.valid} Valid` 
+                : `${stats.valid}`;
         }
         if (this.valWarnCount) {
-            this.valWarnCount.textContent = this.valWarnCount.id === 'val-warning' ? `🟡 ${stats.warning} Warnings` : `${stats.warning}`;
+            this.valWarnCount.innerHTML = this.valWarnCount.id === 'val-warning' 
+                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" style="vertical-align:-1px;margin-right:2px;"><polygon points="12 2 22 20 2 20"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${stats.warning} Warnings` 
+                : `${stats.warning}`;
         }
         if (this.valErrCount) {
-            this.valErrCount.textContent = this.valErrCount.id === 'val-error' ? `🔴 ${stats.error} Errors` : `${stats.error}`;
+            this.valErrCount.innerHTML = this.valErrCount.id === 'val-error' 
+                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" style="vertical-align:-1px;margin-right:2px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${stats.error} Errors` 
+                : `${stats.error}`;
         }
     }
 
@@ -304,10 +310,10 @@ EXPLANATION: Force equals mass times acceleration.`;
         const rowsHtml = filtered.map((q, idx) => {
             const status = q._validation?.status || 'valid';
             const statusBadge = status === 'valid'
-                ? '<span style="color:var(--correct);font-weight:600;">🟢 Valid</span>'
+                ? '<span style="display:inline-flex;align-items:center;gap:0.25rem;color:var(--correct);font-weight:600;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Valid</span>'
                 : (status === 'warning'
-                    ? `<span style="color:#f59e0b;font-weight:600;" title="${q._validation?.warnings?.join(' ')}">🟡 Warn</span>`
-                    : `<span style="color:var(--wrong);font-weight:600;" title="${q._validation?.errors?.join(' ')}">🔴 Error</span>`);
+                    ? `<span style="display:inline-flex;align-items:center;gap:0.25rem;color:#f59e0b;font-weight:600;" title="${q._validation?.warnings?.join(' ')}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 20 2 20"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Warn</span>`
+                    : `<span style="display:inline-flex;align-items:center;gap:0.25rem;color:var(--wrong);font-weight:600;" title="${q._validation?.errors?.join(' ')}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Error</span>`);
 
             const typeBadge = q.type === 'mcq'
                 ? '<span class="nav-badge" style="border-color:var(--primary);color:var(--primary);">MCQ</span>'
@@ -320,15 +326,16 @@ EXPLANATION: Force equals mass times acceleration.`;
                     const isAnswer = c === q.answer;
                     return `
                         <button type="button" class="choice-chip ${isAnswer ? 'is-answer' : ''}" data-choice="${escapeHtml(c)}" data-question-index="${idx}" style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.5rem;margin:0.15rem;border-radius:0.4rem;font-size:0.8rem;border:1px solid ${isAnswer ? 'var(--correct)' : 'var(--glass-border)'};background:${isAnswer ? 'var(--correct-bg)' : 'rgba(255,255,255,0.05)'};color:var(--text-main);cursor:pointer;">
-                            ${isAnswer ? '✓ ' : ''}${escapeHtml(c)}
+                            ${isAnswer ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg>' : ''}${escapeHtml(c)}
                         </button>
                     `;
                 }).join('');
 
                 if (!q.answer) {
                     choicesHtml += `
-                        <button type="button" class="choice-chip missing-key-btn" data-question-index="${idx}" style="display:inline-flex;padding:0.2rem 0.5rem;margin:0.15rem;border-radius:0.4rem;font-size:0.8rem;border:1px solid var(--wrong);background:var(--wrong-bg);color:var(--wrong);cursor:pointer;">
-                            ⚠️ Select Answer
+                        <button type="button" class="choice-chip missing-key-btn" data-question-index="${idx}" style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.5rem;margin:0.15rem;border-radius:0.4rem;font-size:0.8rem;border:1px solid var(--wrong);background:var(--wrong-bg);color:var(--wrong);cursor:pointer;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 20 2 20"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            <span>Select Answer</span>
                         </button>
                     `;
                 }
@@ -357,7 +364,9 @@ EXPLANATION: Force equals mass times acceleration.`;
                         </div>
                     </td>
                     <td>
-                        <button type="button" class="icon-btn delete-row-btn" data-index="${idx}" title="Delete Question" style="background:none;border:none;color:var(--wrong);cursor:pointer;">🗑️</button>
+                        <button type="button" class="icon-btn delete-row-btn" data-index="${idx}" title="Delete Question" style="background:none;border:none;color:var(--wrong);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
                     </td>
                 </tr>
             `;
@@ -495,7 +504,7 @@ EXPLANATION: Force equals mass times acceleration.`;
             } else if (!hasQuestions) {
                 statusEl.textContent = 'Please paste questions to import.';
             } else if (hasErrors) {
-                statusEl.textContent = 'Please fix questions marked with 🔴 Error before saving.';
+                statusEl.textContent = 'Please fix questions marked with Error before saving.';
             } else {
                 statusEl.textContent = `Ready to import ${this.parsedResult.questions.length} questions.`;
             }
