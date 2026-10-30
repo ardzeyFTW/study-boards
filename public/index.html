@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <!-- Subpath Trailing-Slash Guard for GitHub Pages -->
+    <script>
+      if (window.location.pathname.split('/').pop().indexOf('.') === -1 && !window.location.pathname.endsWith('/')) {
+        window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+      }
+    </script>
+    <base href="./">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Boards — Standalone Public Quiz Platform</title>
+    
+    <!-- Inline Theme Bootstrap to Prevent FOUC -->
+    <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('quizTheme') || 'dark';
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        } catch (e) {}
+      })();
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- MathJax Configuration for LaTeX Math -->
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Persistent Navigation Bar -->
+        <nav class="app-nav">
+            <div class="nav-brand" id="nav-brand-btn" role="button" tabindex="0">
+                <span class="nav-logo">⚡</span>
+                <span class="nav-title">Study Boards</span>
+                <span class="nav-badge">Public</span>
+            </div>
+            <div class="nav-actions">
+                <button id="nav-import-btn" class="nav-btn primary-nav-btn" title="Import Study Set">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Import Set</span>
+                </button>
+                <button id="theme-toggle-btn" class="nav-icon-btn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+                    <span class="theme-icon-dark">🌙</span>
+                    <span class="theme-icon-light" style="display:none;">☀️</span>
+                </button>
+                <button id="profile-btn" class="nav-icon-btn" title="Profile & Analytics" aria-label="Open profile">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </button>
+                <button id="settings-btn" class="nav-icon-btn" title="Settings" aria-label="Open settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Safari Inactivity 5-Day Eviction Warning Banner -->
+        <div id="storage-advisory-banner" class="storage-banner hidden">
+            <div class="storage-banner-content">
+                <span class="storage-banner-icon">⚠️</span>
+                <span class="storage-banner-text">
+                    <strong>Storage Advisory:</strong> Safari may clear browser data after 7 days of inactivity. Back up your study sets now or add this app to your Home Screen.
+                </span>
+            </div>
+            <div class="storage-banner-actions">
+                <button id="banner-backup-btn" class="banner-btn primary">Download Backup</button>
+                <button id="banner-dismiss-btn" class="banner-btn-dismiss" title="Dismiss">&times;</button>
+            </div>
+        </div>
+
+        <!-- 1. Home Screen (Study Set Library) -->
+        <section id="home-screen" class="screen active">
+            <!-- Active Session Resume Banner (Synchronously read from localStorage) -->
+            <div id="continue-quiz-container" class="continue-banner hidden">
+                <div class="continue-info">
+                    <span class="continue-icon">⏳</span>
+                    <div>
+                        <h4 id="continue-title" class="continue-set-title">Resume Active Quiz</h4>
+                        <p id="continue-meta" class="continue-set-meta">Mastery Mode · 64% completed</p>
+                    </div>
+                </div>
+                <div class="continue-actions">
+                    <button id="resume-quiz-btn" class="primary-btn continue-btn">Resume</button>
+                    <button id="abandon-quiz-btn" class="secondary-btn continue-btn-ghost">Discard</button>
+                </div>
+            </div>
+
+            <!-- Quick Stats Summary Header -->
+            <header class="home-header">
+                <div class="quick-stats-row">
+                    <div class="quick-stat-card glass-panel">
+                        <span class="quick-stat-val" id="stat-total-answered">0</span>
+                        <span class="quick-stat-label">Answered</span>
+                    </div>
+                    <div class="quick-stat-card glass-panel">
+                        <span class="quick-stat-val" id="stat-mastered-count">0</span>
+                        <span class="quick-stat-label">Mastered</span>
+                    </div>
+                    <div class="quick-stat-card glass-panel">
+                        <span class="quick-stat-val" id="stat-streak-days">0🔥</span>
+                        <span class="quick-stat-label">Day Streak</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Library Control Bar -->
+            <div class="library-controls glass-panel">
+                <div class="search-wrap">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="set-search-input" placeholder="Search study sets by title or category...">
+                </div>
+                <div class="category-filter-wrap" id="category-filter-container">
+                    <button class="filter-pill active" data-category="all">All Sets</button>
+                </div>
+            </div>
+
+            <!-- Study Set Grid -->
+            <div id="study-sets-grid" class="study-sets-grid">
+                <!-- Dynamically populated with study set cards -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-library-state" class="empty-state glass-panel hidden">
+                <div class="empty-state-icon">📚</div>
+                <h3>No Study Sets Yet</h3>
+                <p>Import questions from spreadsheets, Quizlet, Aiken text, or JSON to start drilling.</p>
+                <div class="empty-actions">
+                    <button id="empty-import-btn" class="primary-btn">Import Questions</button>
+                    <button id="empty-sample-btn" class="secondary-btn">Load Sample Set</button>
+                </div>
+            </div>
+            
+            <div class="app-version">v1.0.0-standalone</div>
+        </section>
+
+        <!-- 2. Quiz Runner Screen -->
+        <section id="quiz-screen" class="screen">
+            <header class="quiz-header">
+                <button id="back-to-sets-btn" class="icon-btn">← Sets</button>
+                <div class="quiz-progress-center">
+                    <span id="quiz-set-title-badge" class="quiz-title-badge">Set Title</span>
+                    <div class="progress-bar-wrap">
+                        <div id="quiz-progress-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div class="quiz-meta-row">
+                        <span id="quiz-counter-text" class="quiz-counter">Question 1/20</span>
+                        <span id="quiz-timer-text" class="quiz-timer">00:00</span>
+                        <span id="quiz-score-badge" class="quiz-score-badge">Score: 0</span>
+                    </div>
+                </div>
+                <button id="quiz-settings-toggle-btn" class="icon-btn" title="Quiz Options">⚙️</button>
+            </header>
+
+            <main class="question-container glass-panel">
+                <div class="question-header-row">
+                    <span id="question-type-badge" class="q-type-badge">Multiple Choice</span>
+                    <button id="hint-btn" class="hint-btn" title="Show Hint">💡 Hint</button>
+                </div>
+                <h2 id="question-text" class="question-title">Loading question...</h2>
+                <div id="hint-box" class="hint-box hidden"></div>
+                
+                <!-- Identification Drill Container -->
+                <div id="id-input-container" class="id-input-container hidden">
+                    <input type="text" id="id-answer-input" placeholder="Type your answer here..." autocomplete="off" autocapitalize="off">
+                    <button id="id-submit-btn" class="primary-btn id-submit">Submit</button>
+                </div>
+
+                <!-- Multiple Choice List -->
+                <div id="choices-container" class="choices-list">
+                    <!-- Choice buttons generated dynamically -->
+                </div>
+            </main>
+
+            <!-- Collapsible Explanation Box -->
+            <div id="explanation-container" class="explanation-box hidden">
+                <div id="explanation-toggle-btn" class="explanation-header" tabindex="0">
+                    <div class="explanation-header-title">
+                        <span class="explanation-icon">💡</span>
+                        <span class="explanation-label">Explanation & Solution</span>
+                    </div>
+                    <span id="explanation-chevron" class="chevron">▼</span>
+                </div>
+                <div id="explanation-content" class="explanation-content hidden">
+                    <div id="explanation-body" class="explanation-body"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Footer Controls -->
+            <div class="quiz-footer">
+                <button id="next-question-btn" class="primary-btn hidden">Next Question →</button>
+            </div>
+        </section>
+
+        <!-- 3. Results Screen -->
+        <section id="results-screen" class="screen">
+            <div class="glass-panel text-center results-hero">
+                <div class="results-celebration-badge" id="results-badge">🎉</div>
+                <h2 id="results-title" class="results-heading">Quiz Completed!</h2>
+                <p id="results-subtitle" class="results-subheading">Speedrun linear examination results</p>
+                
+                <div class="results-stats-row">
+                    <div class="result-metric">
+                        <span class="metric-val" id="result-score-val">0 / 0</span>
+                        <span class="metric-lbl">Final Score</span>
+                    </div>
+                    <div class="result-metric">
+                        <span class="metric-val" id="result-accuracy-val">0%</span>
+                        <span class="metric-lbl">Accuracy</span>
+                    </div>
+                    <div class="result-metric">
+                        <span class="metric-val" id="result-time-val">00:00</span>
+                        <span class="metric-lbl">Duration</span>
+                    </div>
+                </div>
+
+                <div class="results-actions">
+                    <button id="retake-quiz-btn" class="secondary-btn">↺ Retake Quiz</button>
+                    <button id="results-home-btn" class="primary-btn">Back to Library</button>
+                </div>
+            </div>
+
+            <!-- Review Questions Accordion Section -->
+            <div class="glass-panel review-section">
+                <div class="review-header">
+                    <div class="review-title-group">
+                        <span class="review-icon">📖</span>
+                        <span class="review-title">Review Answers</span>
+                        <span class="review-count">(<span id="review-count-num">0</span>)</span>
+                    </div>
+                    <div class="review-filter-group">
+                        <input type="text" id="review-search" placeholder="Search questions..." class="review-search-input">
+                        <select id="review-filter-select" class="review-select">
+                            <option value="all">All Answers</option>
+                            <option value="wrong">Mistakes Only</option>
+                            <option value="correct">Correct Only</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="review-list-container" class="review-list">
+                    <!-- Cards populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Profile & Analytics Modal -->
+        <div id="profile-modal" class="modal">
+            <div class="modal-content glass-panel profile-panel">
+                <div class="modal-header">
+                    <div class="profile-header-title">
+                        <span class="profile-avatar">👤</span>
+                        <h3>Learning Profile & Stats</h3>
+                    </div>
+                    <button id="close-profile-btn" class="icon-btn" aria-label="Close modal">&times;</button>
+                </div>
+
+                <div class="modal-body profile-body">
+                    <!-- Lifetime Stat Cards -->
+                    <div class="ps-total">
+                        <div class="ps-total-val" id="prof-lifetime-answered">0</div>
+                        <div class="ps-total-label">Total Questions Answered</div>
+                    </div>
+
+                    <div class="ps-mastery-card">
+                        <div class="ps-mastery-header">
+                            <div class="ps-mastery-title-group">
+                                <span class="ps-mastery-icon">🏆</span>
+                                <span class="ps-mastery-title">Mastery Progress</span>
+                            </div>
+                            <div class="ps-mastery-stat">
+                                <span id="prof-mastered-val" class="ps-mastery-count">0</span>
+                                <span class="ps-mastery-divider">/</span>
+                                <span id="prof-total-val" class="ps-mastery-total">0</span>
+                                <span id="prof-pct-val" class="ps-mastery-pct">(0%)</span>
+                            </div>
+                        </div>
+                        <div class="ps-mastery-bar-track">
+                            <div id="prof-mastery-fill" class="ps-mastery-bar-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- GitHub-Style Activity Heatmap Calendar -->
+                    <div id="profile-calendar-card" class="ps-calendar-card">
+                        <!-- Populated by js/profile.js -->
+                    </div>
+
+                    <!-- Storage Health & Backup Section -->
+                    <div class="storage-health-section glass-panel">
+                        <div class="storage-health-header">
+                            <span class="storage-icon">💾</span>
+                            <span class="storage-title">Local Data Sovereignty</span>
+                        </div>
+                        <p class="storage-desc">All study sets, answers, and streak logs are stored 100% inside your browser's IndexedDB. Export a JSON backup to migrate between computers or browsers.</p>
+                        <div class="storage-metrics-row">
+                            <span>Storage Quota: <strong id="storage-quota-text">Calculating...</strong></span>
+                            <span>Persistence: <strong id="storage-persist-status">Checking...</strong></span>
+                        </div>
+                        <div class="storage-actions-row">
+                            <button id="export-json-btn" class="secondary-btn storage-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                <span>Export JSON Backup</span>
+                            </button>
+                            <label for="import-json-input" class="secondary-btn storage-btn import-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                <span>Restore from JSON</span>
+                            </label>
+                            <input type="file" id="import-json-input" accept=".json" class="hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content glass-panel settings-panel">
+                <div class="modal-header">
+                    <h3>⚙️ Display & Quiz Options</h3>
+                    <button id="close-settings-btn" class="icon-btn" aria-label="Close settings">&times;</button>
+                </div>
+                <div class="modal-body settings-body">
+                    <div class="settings-group">
+                        <h4>Typography & Display</h4>
+                        <div class="setting-row">
+                            <div>
+                                <label for="font-size-slider">Question Font Size (<span id="font-size-val">18px</span>)</label>
+                                <span class="setting-hint">Adjust card readability for small screens.</span>
+                            </div>
+                            <input type="range" id="font-size-slider" min="14" max="28" value="18">
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h4>Explanations</h4>
+                        <div class="setting-row">
+                            <div>
+                                <label>Auto-Expand Explanations</label>
+                                <span class="setting-hint">Automatically shows mathematical explanations upon answering.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-auto-explain">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Import Modal (5-Step Workflow) -->
+        <div id="import-modal" class="modal">
+            <div class="modal-content glass-panel import-panel">
+                <div class="modal-header">
+                    <div class="import-modal-title">
+                        <span class="import-icon">📥</span>
+                        <h3>Import Custom Study Set</h3>
+                    </div>
+                    <button id="close-import-btn" class="icon-btn" aria-label="Close import">&times;</button>
+                </div>
+
+                <div class="modal-body import-body">
+                    <!-- Step 1: Set Metadata -->
+                    <div class="import-step-section">
+                        <div class="form-row" style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+                            <div class="form-group" style="flex:2;min-width:220px;">
+                                <label for="import-set-title" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.3rem;">Study Set Title *</label>
+                                <input type="text" id="import-set-title" placeholder="e.g. Electrical Circuits & AC Analysis" required style="width:100%;padding:0.6rem;border-radius:0.5rem;background:var(--bg-input);border:1px solid var(--glass-border);color:var(--text-main);">
+                            </div>
+                            <div class="form-group" style="flex:1;min-width:160px;">
+                                <label for="import-set-category" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.3rem;">Category</label>
+                                <input type="text" id="import-set-category" placeholder="e.g. Engineering" style="width:100%;padding:0.6rem;border-radius:0.5rem;background:var(--bg-input);border:1px solid var(--glass-border);color:var(--text-main);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Format & Delimiter Config Bar -->
+                    <div class="import-config-bar glass-panel" style="display:flex;gap:1rem;align-items:center;padding:0.75rem 1rem;margin-bottom:1rem;flex-wrap:wrap;border-radius:0.75rem;">
+                        <div class="config-item">
+                            <label for="import-format-select" style="font-size:0.8rem;margin-right:0.4rem;">Format:</label>
+                            <select id="import-format-select" style="padding:0.35rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);">
+                                <option value="auto">Auto-Detect</option>
+                                <option value="delimited">Delimited (TSV / CSV / Pipe)</option>
+                                <option value="aiken">Academic Aiken</option>
+                                <option value="json">JSON Study Set</option>
+                            </select>
+                        </div>
+                        <div class="config-item" id="field-delim-item">
+                            <label for="import-field-delim" style="font-size:0.8rem;margin-right:0.4rem;">Delimiter:</label>
+                            <select id="import-field-delim" style="padding:0.35rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);">
+                                <option value="auto">Auto</option>
+                                <option value="&#9;">Tab (\t - Excel/Sheets)</option>
+                                <option value="|">Pipe (|)</option>
+                                <option value=",">Comma (,)</option>
+                                <option value=";">Semicolon (;)</option>
+                            </select>
+                        </div>
+                        <div class="config-item">
+                            <label class="checkbox-label" style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem;cursor:pointer;">
+                                <input type="checkbox" id="import-unpack-matching" checked>
+                                <span>Unpack Key=Value</span>
+                            </label>
+                        </div>
+                        <div class="sample-loaders-wrap" style="margin-left:auto;font-size:0.8rem;">
+                            <span style="color:var(--text-dim);margin-right:0.3rem;">Templates:</span>
+                            <button type="button" class="btn-link" data-sample="tsv" style="background:none;border:none;color:var(--primary);cursor:pointer;">Flashcards</button>
+                            <span style="color:var(--text-dim);">·</span>
+                            <button type="button" class="btn-link" data-sample="pipe" style="background:none;border:none;color:var(--primary);cursor:pointer;">Pipe MCQ</button>
+                            <span style="color:var(--text-dim);">·</span>
+                            <button type="button" class="btn-link" data-sample="asterisk" style="background:none;border:none;color:var(--primary);cursor:pointer;">*Inline</button>
+                            <span style="color:var(--text-dim);">·</span>
+                            <button type="button" class="btn-link" data-sample="aiken" style="background:none;border:none;color:var(--primary);cursor:pointer;">Aiken</button>
+                            <span style="color:var(--text-dim);">·</span>
+                            <button type="button" class="btn-link" data-sample="circuits" style="background:none;border:none;color:var(--primary);cursor:pointer;">Circuits</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Textarea & File Drag-and-Drop Zone -->
+                    <div class="import-input-zone" style="margin-bottom:1rem;position:relative;">
+                        <textarea id="import-raw-textarea" rows="8" placeholder="Paste your questions here...&#10;&#10;Examples:&#10;• TSV / Flashcard: Term [Tab] Definition&#10;• Inline MCQ: What is Ohm's law? | *V = IR | I = V/R | P = VI&#10;• Aiken: Question statement followed by A., B., ANSWER: A" style="width:100%;padding:0.75rem;border-radius:0.75rem;background:var(--bg-input);border:1px solid var(--glass-border);color:var(--text-main);font-family:monospace;font-size:0.88rem;resize:vertical;"></textarea>
+                    </div>
+
+                    <!-- Step 4: Live Validation Summary Bar -->
+                    <div id="validation-summary-bar" class="validation-bar glass-panel hidden" style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1rem;border-radius:0.6rem;margin-bottom:1rem;flex-wrap:wrap;gap:0.75rem;">
+                        <div class="summary-counts" style="display:flex;gap:0.75rem;font-size:0.85rem;font-weight:600;">
+                            <span id="val-total" style="color:var(--text-main);">0 Questions</span>
+                            <span id="val-valid-count" style="color:var(--correct);">0 Valid</span>
+                            <span id="val-warn-count" style="color:#f59e0b;">0 Warnings</span>
+                            <span id="val-err-count" style="color:var(--wrong);">0 Errors</span>
+                        </div>
+                        <div class="filter-tabs" id="import-filter-tabs" style="display:flex;gap:0.4rem;">
+                            <button type="button" class="filter-tab active" data-filter="all">All</button>
+                            <button type="button" class="filter-tab" data-filter="valid">🟢 Valid</button>
+                            <button type="button" class="filter-tab" data-filter="warning">🟡 Warn</button>
+                            <button type="button" class="filter-tab" data-filter="error">🔴 Error</button>
+                        </div>
+                        <div>
+                            <button type="button" class="secondary-btn" id="toggle-latex-preview-btn" style="padding:0.3rem 0.6rem;font-size:0.8rem;">
+                                <span>LaTeX Preview: <strong>Off</strong></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Interactive Live Preview Grid -->
+                    <div id="import-preview-container" class="preview-table-wrap hidden" style="max-height:350px;overflow-y:auto;margin-bottom:1.25rem;border-radius:0.75rem;border:1px solid var(--glass-border);">
+                        <table class="preview-table" style="width:100%;border-collapse:collapse;font-size:0.85rem;text-align:left;">
+                            <thead>
+                                <tr style="background:rgba(255,255,255,0.04);border-bottom:1px solid var(--glass-border);">
+                                    <th style="padding:0.6rem;width:40px;">#</th>
+                                    <th style="padding:0.6rem;width:75px;">Status</th>
+                                    <th style="padding:0.6rem;width:60px;">Type</th>
+                                    <th style="padding:0.6rem;min-width:220px;">Question Statement</th>
+                                    <th style="padding:0.6rem;min-width:240px;">Choices & Answer</th>
+                                    <th style="padding:0.6rem;min-width:180px;">Explanation</th>
+                                    <th style="padding:0.6rem;width:40px;">Act</th>
+                                </tr>
+                            </thead>
+                            <tbody id="import-preview-tbody">
+                                <!-- Generated preview rows with in-place cell editing -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Step 6: Import Actions -->
+                    <div class="import-footer-actions" style="display:flex;justify-content:space-between;align-items:center;padding-top:0.75rem;border-top:1px solid var(--glass-border);flex-wrap:wrap;gap:0.75rem;">
+                        <span id="import-commit-status" style="font-size:0.85rem;color:var(--text-dim);">Enter a title and paste questions to proceed.</span>
+                        <div style="display:flex;gap:0.6rem;">
+                            <button id="import-cancel-btn" class="secondary-btn">Cancel</button>
+                            <button id="import-save-btn" class="primary-btn" disabled>💾 Save to Library</button>
+                            <button id="import-save-start-btn" class="primary-btn" style="background:#10b981;" disabled>🚀 Save & Start</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Popover for Quick-Fixing Answer Keys -->
+        <div id="choice-popover" class="choice-popover glass-panel hidden" style="position:fixed;z-index:2000;background:var(--bg-card);border:1px solid var(--glass-border);box-shadow:var(--shadow-md);padding:0.75rem;border-radius:0.75rem;min-width:220px;max-width:320px;">
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;color:var(--text-dim);text-transform:uppercase;">Designate Correct Answer</div>
+            <div id="popover-choices-list"></div>
+        </div>
+
+        <!-- 7. Confirmation Modal -->
+        <div id="confirm-modal" class="modal">
+            <div class="modal-content glass-panel confirm-panel">
+                <h3 id="confirm-modal-title">Confirm Action</h3>
+                <p id="confirm-modal-msg">Are you sure you want to proceed?</p>
+                <div class="modal-actions" style="display:flex;justify-content:flex-end;gap:0.6rem;margin-top:1.25rem;">
+                    <button id="confirm-cancel-btn" class="secondary-btn">Cancel</button>
+                    <button id="confirm-ok-btn" class="secondary-btn" style="background:var(--wrong);color:#fff;">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts (Modular Vanilla ES Modules) -->
+    <script type="module" src="js/app.js"></script>
+
+    <!-- Relative Service Worker Registration -->
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js', { scope: './' })
+          .then(reg => console.log('[SW] Registered under relative scope:', reg.scope))
+          .catch(err => console.warn('[SW] Registration failed:', err));
+      });
+    }
+    </script>
+</body>
+</html>

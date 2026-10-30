@@ -1,0 +1,73 @@
+{
+  "id": "set_sample_circuits_001",
+  "title": "AC Circuit Analysis & Fundamentals",
+  "description": "Comprehensive sample study set featuring electrical engineering circuits, SI units, and LaTeX mathematical formulas.",
+  "category": "Electrical Engineering",
+  "questionCount": 5,
+  "source": "json",
+  "createdAt": 1730256000000,
+  "updatedAt": 1730256000000,
+  "color": "#4f46e5",
+  "questions": [
+    {
+      "id": "q_circuits_001",
+      "setId": "set_sample_circuits_001",
+      "type": "mcq",
+      "order": 1,
+      "question_text": "In a series RLC circuit, what is the resonant angular frequency $\\omega_0$?",
+      "choices": [
+        "$\\frac{1}{\\sqrt{LC}}$",
+        "$\\frac{1}{LC}$",
+        "$\\sqrt{\\frac{L}{C}}$",
+        "$\\frac{R}{2L}$"
+      ],
+      "answer": "$\\frac{1}{\\sqrt{LC}}$",
+      "explanation": "Resonance occurs when the inductive and capacitive reactances cancel each other out: $\\omega_0 L = \\frac{1}{\\omega_0 C} \\implies \\omega_0^2 = \\frac{1}{LC} \\implies \\omega_0 = \\frac{1}{\\sqrt{LC}}$.",
+      "tags": ["Circuits", "AC Analysis", "Resonance"]
+    },
+    {
+      "id": "q_circuits_002",
+      "setId": "set_sample_circuits_001",
+      "type": "mcq",
+      "order": 2,
+      "question_text": "What is the SI unit of magnetic flux?",
+      "choices": ["Tesla", "Weber", "Henry", "Maxwell"],
+      "answer": "Weber",
+      "explanation": "The Weber (Wb) is the SI unit of magnetic flux. Tesla (T) is magnetic flux density ($1\\text{ T} = 1\\text{ Wb/m}^2$), and Henry (H) is the unit of inductance.",
+      "tags": ["Electromagnetics", "SI Units"]
+    },
+    {
+      "id": "q_circuits_003",
+      "setId": "set_sample_circuits_001",
+      "type": "identification",
+      "order": 3,
+      "question_text": "What Philippine Republic Act is officially known as the 'Renewable Energy Act of 2008'?",
+      "choices": ["RA 9513"],
+      "answer": "RA 9513",
+      "explanation": "Republic Act No. 9513 promotes the development, utilization, and commercialization of renewable energy resources in the Philippines.",
+      "tags": ["EE Laws", "Regulatory"]
+    },
+    {
+      "id": "q_circuits_004",
+      "setId": "set_sample_circuits_001",
+      "type": "mcq",
+      "order": 4,
+      "question_text": "What is the magnitude of the impedance of an ideal inductor $L$ at angular frequency $\\omega$?",
+      "choices": ["$\\omega L$", "$\\frac{1}{\\omega L}$", "$\\omega^2 L$", "$\\sqrt{\\omega L}$"],
+      "answer": "$\\omega L$",
+      "explanation": "The inductive reactance is given by $X_L = \\omega L$, where $\\omega = 2\\pi f$.",
+      "tags": ["Circuits", "Reactance"]
+    },
+    {
+      "id": "q_circuits_005",
+      "setId": "set_sample_circuits_001",
+      "type": "mcq",
+      "order": 5,
+      "question_text": "What is the power factor of a purely capacitive circuit?",
+      "choices": ["0 leading", "0 lagging", "1.0", "0.707 leading"],
+      "answer": "0 leading",
+      "explanation": "In a pure capacitor, current leads voltage by $90^\\circ$. The power factor is $\\cos(90^\\circ) = 0$ leading.",
+      "tags": ["AC Circuits", "Power Factor"]
+    }
+  ]
+}

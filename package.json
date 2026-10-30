@@ -1,0 +1,32 @@
+{
+  "name": "study-boards",
+  "version": "1.0.0",
+  "description": "Standalone pure client-side public quiz and spaced repetition platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "serve public -p 8080",
+    "serve": "serve public -p 8080",
+    "test": "vitest run tests/unit",
+    "test:watch": "vitest tests/unit",
+    "test:coverage": "vitest run tests/unit --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "lint": "eslint public/js/ tests/"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "eslint": "^9.13.0",
+    "serve": "^14.2.4",
+    "vitest": "^2.1.3"
+  },
+  "keywords": [
+    "quiz",
+    "spaced-repetition",
+    "github-pages",
+    "static",
+    "indexeddb"
+  ],
+  "author": "Ardzey",
+  "license": "MIT"
+}
