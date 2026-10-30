@@ -426,6 +426,36 @@
                         </div>
                     </div>
 
+                    <!-- AI Question Generation Helper Banner -->
+                    <div class="ai-prompt-banner glass-panel">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                            <div style="display:flex;align-items:center;gap:0.75rem;">
+                                <div style="background:linear-gradient(135deg, rgba(99,102,241,0.25), rgba(168,85,247,0.25));color:var(--primary);padding:0.5rem;border-radius:0.6rem;display:flex;border:1px solid rgba(168,85,247,0.3);">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <strong style="font-size:0.95rem;display:flex;align-items:center;gap:0.4rem;">
+                                        <span>Generate from Notes with AI</span>
+                                        <span class="nav-badge" style="border-color:#a855f7;color:#c084fc;font-size:0.68rem;padding:0.1rem 0.35rem;">ChatGPT · Gemini · Claude</span>
+                                    </strong>
+                                    <span style="font-size:0.8rem;color:var(--text-muted);display:block;margin-top:0.15rem;">Copy our AI prompt, send it to your AI with your slides or notes, and paste the output below!</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+                                <button type="button" id="open-ai-prompt-modal-btn" class="secondary-btn" style="padding:0.45rem 0.85rem;font-size:0.82rem;display:inline-flex;align-items:center;gap:0.4rem;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                    <span>Customize Prompt</span>
+                                </button>
+                                <button type="button" id="copy-ai-quick-btn" class="primary-btn" style="padding:0.45rem 0.95rem;font-size:0.82rem;display:inline-flex;align-items:center;gap:0.45rem;background:linear-gradient(135deg, #6366f1, #a855f7);border:none;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <span id="copy-ai-quick-text">Copy AI Prompt</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Step 2: Format & Delimiter Config Bar -->
                     <div class="import-config-bar glass-panel" style="display:flex;gap:1rem;align-items:center;padding:0.75rem 1rem;margin-bottom:1rem;flex-wrap:wrap;border-radius:0.75rem;">
                         <div class="config-item">
@@ -469,7 +499,7 @@
 
                     <!-- Step 3: Textarea & File Drag-and-Drop Zone -->
                     <div class="import-input-zone" style="margin-bottom:1rem;position:relative;">
-                        <textarea id="import-raw-textarea" rows="8" placeholder="Paste your questions here...&#10;&#10;Examples:&#10;• TSV / Flashcard: Term [Tab] Definition&#10;• Inline MCQ: What is Ohm's law? | *V = IR | I = V/R | P = VI&#10;• Aiken: Question statement followed by A., B., ANSWER: A" style="width:100%;padding:0.75rem;border-radius:0.75rem;background:var(--bg-input);border:1px solid var(--glass-border);color:var(--text-main);font-family:monospace;font-size:0.88rem;resize:vertical;"></textarea>
+                        <textarea id="import-raw-textarea" rows="8" placeholder="Paste your questions here...&#10;&#10;💡 EASIEST WAY (AI GENERATION):&#10;1. Click 'Copy AI Prompt' above&#10;2. Paste it into ChatGPT / Gemini / Claude with your notes or slides&#10;3. Paste the AI's response here!&#10;&#10;MANUAL EXAMPLES:&#10;• Inline MCQ: What is Ohm's law? | *V = IR | I = V/R | P = VI | R = V^2/P | Relates voltage, current, and resistance&#10;• Flashcard: Capacitance | Farad | SI unit of capacitance&#10;• Aiken: Question followed by A., B., C., and ANSWER: A" style="width:100%;padding:0.75rem;border-radius:0.75rem;background:var(--bg-input);border:1px solid var(--glass-border);color:var(--text-main);font-family:monospace;font-size:0.88rem;resize:vertical;"></textarea>
                     </div>
 
                     <!-- Step 4: Live Validation Summary Bar -->
@@ -557,6 +587,99 @@
                     <button id="confirm-ok-btn" class="secondary-btn" style="background:var(--wrong);color:#fff;">Delete</button>
                 </div>
             </div>
+        </div>
+
+        <!-- 8. AI Prompt Generator Helper Modal -->
+        <div id="ai-prompt-modal" class="modal">
+            <div class="modal-content glass-panel" style="max-width: 680px;">
+                <div class="modal-header">
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        <h3 style="margin:0;font-size:1.15rem;">AI Quiz Prompt Generator</h3>
+                    </div>
+                    <button id="close-ai-prompt-modal-btn" class="icon-btn" aria-label="Close modal">&times;</button>
+                </div>
+                <div class="modal-body" style="padding-top:0.5rem;">
+                    <!-- Simple 3-step guide -->
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:0.75rem;margin-bottom:1.25rem;">
+                        <div class="glass-panel" style="padding:0.65rem 0.85rem;border-radius:0.6rem;background:rgba(255,255,255,0.03);">
+                            <div style="font-size:0.75rem;font-weight:700;color:var(--primary);margin-bottom:0.2rem;">STEP 1</div>
+                            <div style="font-size:0.82rem;font-weight:500;">Copy Prompt Below</div>
+                        </div>
+                        <div class="glass-panel" style="padding:0.65rem 0.85rem;border-radius:0.6rem;background:rgba(255,255,255,0.03);">
+                            <div style="font-size:0.75rem;font-weight:700;color:var(--accent);margin-bottom:0.2rem;">STEP 2</div>
+                            <div style="font-size:0.82rem;font-weight:500;">Paste into AI with Notes</div>
+                        </div>
+                        <div class="glass-panel" style="padding:0.65rem 0.85rem;border-radius:0.6rem;background:rgba(255,255,255,0.03);">
+                            <div style="font-size:0.75rem;font-weight:700;color:var(--correct);margin-bottom:0.2rem;">STEP 3</div>
+                            <div style="font-size:0.82rem;font-weight:500;">Paste Output into Box</div>
+                        </div>
+                    </div>
+
+                    <!-- Customization Controls -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;margin-bottom:1rem;background:rgba(255,255,255,0.02);padding:0.85rem;border-radius:0.6rem;border:1px solid var(--glass-border);">
+                        <div>
+                            <label style="display:block;font-size:0.78rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted);">Quiz Type</label>
+                            <select id="ai-prompt-type" style="width:100%;padding:0.4rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);font-size:0.85rem;">
+                                <option value="mcq">Multiple Choice Questions (Recommended)</option>
+                                <option value="flashcards">Flashcards / Terms (Term & Def)</option>
+                                <option value="aiken">Academic Aiken Format</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.78rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted);">Question Count</label>
+                            <select id="ai-prompt-count" style="width:100%;padding:0.4rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);font-size:0.85rem;">
+                                <option value="10">10 Questions</option>
+                                <option value="5">5 Questions</option>
+                                <option value="15">15 Questions</option>
+                                <option value="20">20 Questions</option>
+                                <option value="all">Comprehensive (Cover All Topics)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.78rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted);">Difficulty Level</label>
+                            <select id="ai-prompt-diff" style="width:100%;padding:0.4rem 0.6rem;border-radius:0.4rem;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-main);font-size:0.85rem;">
+                                <option value="rigorous exam">Board Exam / Rigorous Conceptual</option>
+                                <option value="intermediate college">College / Intermediate</option>
+                                <option value="introductory">Introductory / High School</option>
+                            </select>
+                        </div>
+                        <div style="display:flex;align-items:flex-end;padding-bottom:0.25rem;">
+                            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;cursor:pointer;">
+                                <input type="checkbox" id="ai-prompt-include-latex" checked>
+                                <span>Include LaTeX Formulas ($x^2$)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Monospace Live Prompt Preview -->
+                    <label style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-muted);">
+                        <span>PROMPT PREVIEW (Copy & send to AI)</span>
+                        <span style="font-weight:normal;font-size:0.75rem;">Works with ChatGPT, Gemini, Claude, DeepSeek</span>
+                    </label>
+                    <div id="ai-prompt-preview" class="ai-prompt-preview-box"></div>
+
+                    <!-- Action footer -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.25rem;padding-top:0.75rem;border-top:1px solid var(--glass-border);flex-wrap:wrap;gap:0.75rem;">
+                        <span id="ai-prompt-copied-msg" style="font-size:0.85rem;color:var(--correct);opacity:0;transition:opacity 0.2s;font-weight:600;">✓ Copied to clipboard!</span>
+                        <div style="display:flex;gap:0.6rem;">
+                            <button type="button" id="close-ai-prompt-bottom-btn" class="secondary-btn">Close</button>
+                            <button type="button" id="copy-ai-modal-btn" class="primary-btn" style="background:linear-gradient(135deg, #6366f1, #a855f7);display:inline-flex;align-items:center;gap:0.45rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy Prompt</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Toast Notification -->
+        <div id="copy-toast" class="copy-toast">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="copy-toast-msg">AI Prompt copied to clipboard!</span>
         </div>
     </div>
 

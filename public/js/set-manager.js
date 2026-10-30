@@ -172,7 +172,7 @@ export class SetManager {
                 const states = await getMasteryStates(set.id);
                 const masteredCount = states.filter(s => s.consecutiveCorrect >= 2).length;
                 masteryPercent = set.questionCount > 0 ? Math.round((masteredCount / set.questionCount) * 100) : 0;
-            } catch (_) {}
+            } catch (_) { }
 
             const updatedDate = new Date(set.updatedAt || set.createdAt).toLocaleDateString('en-US', {
                 month: 'short',

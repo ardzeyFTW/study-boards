@@ -372,7 +372,7 @@ export async function getStorageHealth() {
             const percentUsed = quota > 0 ? ((usage / quota) * 100).toFixed(1) : '0';
             const isPersisted = navigator.storage.persisted ? await navigator.storage.persisted() : false;
             return { usageMB, quotaMB, percentUsed, isPersisted };
-        } catch (_) {}
+        } catch (_) { }
     }
     return { usageMB: '0.00', quotaMB: '1000', percentUsed: '0', isPersisted: false };
 }
@@ -424,7 +424,7 @@ export async function exportFullDatabaseJSON() {
                 if (typeof localStorage !== 'undefined') {
                     localStorage.setItem('quizLastBackupTimestamp', Date.now().toString());
                 }
-            } catch (_) {}
+            } catch (_) { }
 
             resolve(jsonString);
         };
@@ -456,7 +456,7 @@ export function importFullDatabaseJSON(jsonString, mode = 'merge') {
                     if (typeof localStorage !== 'undefined') {
                         localStorage.setItem('quizLastBackupTimestamp', Date.now().toString());
                     }
-                } catch (_) {}
+                } catch (_) { }
                 resolve({ success: true, count: payload.data.questions?.length || 0 });
             };
 

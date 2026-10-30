@@ -272,7 +272,7 @@ class StudyBoardsApp {
         try {
             const saved = localStorage.getItem('quizSettings');
             if (saved) this.settings = { ...this.settings, ...JSON.parse(saved) };
-        } catch (_) {}
+        } catch (_) { }
 
         const slider = document.getElementById('font-size-slider');
         const valSpan = document.getElementById('font-size-val');
@@ -302,7 +302,7 @@ class StudyBoardsApp {
     saveSettings() {
         try {
             localStorage.setItem('quizSettings', JSON.stringify(this.settings));
-        } catch (_) {}
+        } catch (_) { }
     }
 
     applyQuestionFontSize() {
@@ -348,7 +348,7 @@ class StudyBoardsApp {
         let pointer = null;
         try {
             pointer = JSON.parse(localStorage.getItem('quizActiveSession'));
-        } catch (_) {}
+        } catch (_) { }
 
         if (pointer && pointer.setId && pointer.title) {
             const titleEl = document.getElementById('continue-title');
@@ -567,7 +567,7 @@ class StudyBoardsApp {
             if (totalAnsEl) totalAnsEl.textContent = Number(stats.totalQuestionsAnswered || 0).toLocaleString();
             if (masteredEl) masteredEl.textContent = Number(stats.masteredQuestionsCount || 0).toLocaleString();
             if (streakEl) streakEl.textContent = `${streak}`;
-        } catch (_) {}
+        } catch (_) { }
     }
 
     async showSetDetailScreen(setId) {
@@ -913,7 +913,7 @@ class StudyBoardsApp {
                 progressPercent,
                 updatedAt: now
             }));
-        } catch (_) {}
+        } catch (_) { }
     }
 
     async completeQuiz() {
@@ -1003,9 +1003,9 @@ class StudyBoardsApp {
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
                         <span style="font-weight:600;font-size:0.85rem;color:var(--text-dim);">Question ${idx + 1}</span>
                         <span style="display:inline-flex;align-items:center;gap:0.3rem;font-weight:600;font-size:0.8rem;color:${item.isCorrect ? 'var(--correct)' : 'var(--wrong)'};">
-                            ${item.isCorrect 
-                                ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Correct' 
-                                : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mistake'}
+                            ${item.isCorrect
+                    ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Correct'
+                    : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mistake'}
                         </span>
                     </div>
                     <p style="font-weight:500;margin-bottom:0.5rem;">${item.question.question_text}</p>

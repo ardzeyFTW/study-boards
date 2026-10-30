@@ -48,6 +48,29 @@ export class ImportUI {
         this.saveStartBtn = this.modal.querySelector('#import-save-start-btn');
         this.cancelBtn = this.modal.querySelector('#import-cancel-btn');
         this.closeBtn = this.modal.querySelector('#close-import-btn') || this.modal.querySelector('#import-close-btn');
+
+        // AI Prompt Banner & Quick Copy
+        this.openAiPromptModalBtn = this.modal.querySelector('#open-ai-prompt-modal-btn');
+        this.copyAiQuickBtn = this.modal.querySelector('#copy-ai-quick-btn');
+        this.copyAiQuickText = this.modal.querySelector('#copy-ai-quick-text');
+
+        // AI Prompt Modal Dialog (Document level)
+        const doc = typeof document !== 'undefined' ? document : null;
+        this.aiPromptModal = doc ? doc.getElementById('ai-prompt-modal') : null;
+        this.closeAiPromptModalBtn = doc ? doc.getElementById('close-ai-prompt-modal-btn') : null;
+        this.closeAiPromptBottomBtn = doc ? doc.getElementById('close-ai-prompt-bottom-btn') : null;
+        this.aiPromptTypeSelect = doc ? doc.getElementById('ai-prompt-type') : null;
+        this.aiPromptCountSelect = doc ? doc.getElementById('ai-prompt-count') : null;
+        this.aiPromptDiffSelect = doc ? doc.getElementById('ai-prompt-diff') : null;
+        this.aiPromptLatexCheckbox = doc ? doc.getElementById('ai-prompt-include-latex') : null;
+        this.aiPromptPreview = doc ? doc.getElementById('ai-prompt-preview') : null;
+        this.copyAiModalBtn = doc ? doc.getElementById('copy-ai-modal-btn') : null;
+        this.aiPromptCopiedMsg = doc ? doc.getElementById('ai-prompt-copied-msg') : null;
+
+        // Floating Toast Notification
+        this.toast = doc ? doc.getElementById('copy-toast') : null;
+        this.toastMsg = doc ? doc.getElementById('copy-toast-msg') : null;
+        this.toastTimeout = null;
     }
 
     attachEventListeners() {
@@ -141,12 +164,67 @@ export class ImportUI {
         if (latexBtn) {
             latexBtn.onclick = () => this.toggleLatexPreview();
         }
+
+        // AI Prompt Banner Quick-Copy
+        if (this.copyAiQuickBtn) {
+            this.copyAiQuickBtn.onclick = () => {
+                const promptText = this.generateAIPrompt('mcq', '10', 'rigorous exam', true);
+                this.copyTextToClipboard(promptText, 'AI Prompt copied! Paste into ChatGPT, Claude or Gemini.');
+                if (this.copyAiQuickText) {
+                    const originalText = this.copyAiQuickText.textContent;
+                    this.copyAiQuickText.textContent = '✓ Copied!';
+                    setTimeout(() => {
+                        if (this.copyAiQuickText) this.copyAiQuickText.textContent = originalText;
+                    }, 2000);
+                }
+            };
+        }
+
+        // AI Prompt Customize Modal Opener
+        if (this.openAiPromptModalBtn) {
+            this.openAiPromptModalBtn.onclick = () => this.openAiPromptModal();
+        }
+
+        // AI Prompt Modal Closers
+        if (this.closeAiPromptModalBtn) {
+            this.closeAiPromptModalBtn.onclick = () => this.closeAiPromptModal();
+        }
+        if (this.closeAiPromptBottomBtn) {
+            this.closeAiPromptBottomBtn.onclick = () => this.closeAiPromptModal();
+        }
+        if (this.aiPromptModal) {
+            this.aiPromptModal.onclick = (e) => {
+                if (e.target === this.aiPromptModal) this.closeAiPromptModal();
+            };
+        }
+
+        // Live preview updates on dropdown changes
+        const updateHandler = () => this.updateAiPromptPreview();
+        if (this.aiPromptTypeSelect) this.aiPromptTypeSelect.onchange = updateHandler;
+        if (this.aiPromptCountSelect) this.aiPromptCountSelect.onchange = updateHandler;
+        if (this.aiPromptDiffSelect) this.aiPromptDiffSelect.onchange = updateHandler;
+        if (this.aiPromptLatexCheckbox) this.aiPromptLatexCheckbox.onchange = updateHandler;
+
+        // AI Prompt Modal Copy Action
+        if (this.copyAiModalBtn) {
+            this.copyAiModalBtn.onclick = () => {
+                const text = this.getCurrentAiPrompt();
+                this.copyTextToClipboard(text, 'Customized AI prompt copied to clipboard!');
+                if (this.aiPromptCopiedMsg) {
+                    this.aiPromptCopiedMsg.style.opacity = '1';
+                    setTimeout(() => {
+                        if (this.aiPromptCopiedMsg) this.aiPromptCopiedMsg.style.opacity = '0';
+                    }, 2500);
+                }
+            };
+        }
     }
 
     open(initialText = '') {
         if (!this.modal) return;
         this.modal.classList.add('active');
         this.modal.classList.remove('hidden');
+        this.updateAiPromptPreview();
 
         if (initialText && this.textarea) {
             this.textarea.value = initialText;
@@ -277,18 +355,18 @@ EXPLANATION: Force equals mass times acceleration.`;
         if (totalBadge) totalBadge.textContent = `${stats.total} Questions`;
 
         if (this.valValidCount) {
-            this.valValidCount.innerHTML = this.valValidCount.id === 'val-valid' 
-                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" style="vertical-align:-1px;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> ${stats.valid} Valid` 
+            this.valValidCount.innerHTML = this.valValidCount.id === 'val-valid'
+                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" style="vertical-align:-1px;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> ${stats.valid} Valid`
                 : `${stats.valid}`;
         }
         if (this.valWarnCount) {
-            this.valWarnCount.innerHTML = this.valWarnCount.id === 'val-warning' 
-                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" style="vertical-align:-1px;margin-right:2px;"><polygon points="12 2 22 20 2 20"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${stats.warning} Warnings` 
+            this.valWarnCount.innerHTML = this.valWarnCount.id === 'val-warning'
+                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" style="vertical-align:-1px;margin-right:2px;"><polygon points="12 2 22 20 2 20"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${stats.warning} Warnings`
                 : `${stats.warning}`;
         }
         if (this.valErrCount) {
-            this.valErrCount.innerHTML = this.valErrCount.id === 'val-error' 
-                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" style="vertical-align:-1px;margin-right:2px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${stats.error} Errors` 
+            this.valErrCount.innerHTML = this.valErrCount.id === 'val-error'
+                ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" style="vertical-align:-1px;margin-right:2px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${stats.error} Errors`
                 : `${stats.error}`;
         }
     }
@@ -440,6 +518,7 @@ EXPLANATION: Force equals mass times acceleration.`;
     }
 
     openFixPopover(questionIndex, targetElement) {
+        if (typeof document === 'undefined') return;
         let popover = document.getElementById('choice-popover');
         if (!popover) return;
 
@@ -474,6 +553,7 @@ EXPLANATION: Force equals mass times acceleration.`;
     }
 
     closeFixPopover() {
+        if (typeof document === 'undefined') return;
         const popover = document.getElementById('choice-popover');
         if (popover) popover.classList.add('hidden');
     }
@@ -534,5 +614,145 @@ EXPLANATION: Force equals mass times acceleration.`;
         } catch (err) {
             alert(`Failed to save study set: ${err.message}`);
         }
+    }
+
+    /* ======================================================================
+       AI PROMPT GENERATOR HELPER METHODS
+       ====================================================================== */
+
+    /**
+     * Generates a tailored, copy-ready system prompt for LLMs (ChatGPT, Gemini, Claude).
+     * @param {string} type - 'mcq' | 'flashcards' | 'aiken'
+     * @param {string} count - '5' | '10' | '15' | '20' | 'all'
+     * @param {string} difficulty - 'rigorous exam' | 'intermediate college' | 'introductory'
+     * @param {boolean} includeLatex
+     * @returns {string}
+     */
+    generateAIPrompt(type = 'mcq', count = '10', difficulty = 'rigorous exam', includeLatex = true) {
+        const countText = count === 'all'
+            ? 'a comprehensive set covering all key concepts, equations, and definitions'
+            : `${count}`;
+
+        const latexRule = includeLatex
+            ? 'Format all mathematical equations, variables, units, and formulas using inline LaTeX enclosed in single dollar signs (e.g. $V = IR$, $\\omega = 2\\pi f$, $\\frac{1}{2}mv^2$).'
+            : 'Write all numbers, units, and formulas using standard plain text without LaTeX.';
+
+        if (type === 'flashcards') {
+            return `You are an expert study flashcard creator. Extract ${countText} terms and definitions at the ${difficulty} level from the reference text or topic provided below.
+
+Strict Output Rules:
+1. Output ONLY the raw flashcards, one card per line.
+2. DO NOT wrap the output in markdown code blocks (NO \`\`\` or \`\`\`text).
+3. DO NOT include headers, numbering, or introductory/concluding filler.
+4. Each line MUST strictly follow this two-column format:
+   Term | Detailed Definition or Explanation
+5. ${latexRule}
+
+--- [PASTE YOUR NOTES / SLIDES / TOPIC / TRANSCRIPT BELOW] ---
+`;
+        }
+
+        if (type === 'aiken') {
+            return `You are an academic test writer. Generate ${countText} multiple-choice questions at the ${difficulty} level based on the material or topic provided below.
+
+Strict Output Rules:
+1. Output ONLY questions in standard Aiken format, separated by a blank line.
+2. DO NOT wrap the output in markdown code blocks (NO \`\`\` or \`\`\`text).
+3. DO NOT include headers, conversational filler, or commentary.
+4. Each question must have the question statement on the first line, followed by choices prefixed with A., B., C., D., then ANSWER: [Letter], and EXPLANATION: [Reasoning].
+5. Example format:
+   What is Ohm's Law?
+   A. V = IR
+   B. I = V/R^2
+   C. P = VI
+   D. V = I/R
+   ANSWER: A
+   EXPLANATION: Ohm's law defines the linear relationship between voltage and current.
+6. ${latexRule}
+
+--- [PASTE YOUR NOTES / SLIDES / TOPIC / TRANSCRIPT BELOW] ---
+`;
+        }
+
+        // Default: MCQ Pipe with asterisk answer key and standalone explanation
+        return `You are an expert exam question author. Generate ${countText} multiple-choice questions at the ${difficulty} level based on the reference notes or topic provided below.
+
+Strict Output Rules:
+1. Output ONLY the raw questions, one question per line.
+2. DO NOT wrap the output in markdown code blocks (NO \`\`\` or \`\`\`text).
+3. DO NOT include headers, numbering (no "1.", "2."), or conversational filler.
+4. Each line MUST strictly follow this pipe-delimited format:
+   Question Text | *Correct Choice | Distractor 1 | Distractor 2 | Distractor 3 | Detailed step-by-step explanation
+5. Prefix the exact correct choice with an asterisk (*) so the system marks it as the answer key.
+6. Provide exactly 4 choices (1 correct with *, 3 plausible wrong options) followed by a clear, standalone explanation at the end.
+7. ${latexRule}
+
+--- [PASTE YOUR NOTES / SLIDES / TOPIC / TRANSCRIPT BELOW] ---
+`;
+    }
+
+    getCurrentAiPrompt() {
+        const type = this.aiPromptTypeSelect ? this.aiPromptTypeSelect.value : 'mcq';
+        const count = this.aiPromptCountSelect ? this.aiPromptCountSelect.value : '10';
+        const diff = this.aiPromptDiffSelect ? this.aiPromptDiffSelect.value : 'rigorous exam';
+        const latex = this.aiPromptLatexCheckbox ? this.aiPromptLatexCheckbox.checked : true;
+        return this.generateAIPrompt(type, count, diff, latex);
+    }
+
+    updateAiPromptPreview() {
+        if (this.aiPromptPreview) {
+            this.aiPromptPreview.textContent = this.getCurrentAiPrompt();
+        }
+    }
+
+    openAiPromptModal() {
+        if (!this.aiPromptModal) return;
+        this.updateAiPromptPreview();
+        this.aiPromptModal.classList.add('active');
+        this.aiPromptModal.classList.remove('hidden');
+    }
+
+    closeAiPromptModal() {
+        if (!this.aiPromptModal) return;
+        this.aiPromptModal.classList.remove('active');
+        this.aiPromptModal.classList.add('hidden');
+    }
+
+    async copyTextToClipboard(text, successMessage = 'Copied to clipboard!') {
+        let copied = false;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                copied = true;
+            } catch (err) {
+                console.warn('Clipboard write failed, using fallback textarea', err);
+            }
+        }
+        if (!copied) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                copied = document.execCommand('copy');
+                document.body.removeChild(ta);
+            } catch (err) {
+                console.error('Fallback copy failed', err);
+            }
+        }
+        this.showToast(copied ? successMessage : 'Could not copy to clipboard automatically.');
+        return copied;
+    }
+
+    showToast(message) {
+        if (!this.toast) return;
+        if (this.toastMsg) this.toastMsg.textContent = message;
+        this.toast.classList.add('show');
+        if (this.toastTimeout) clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => {
+            if (this.toast) this.toast.classList.remove('show');
+        }, 2800);
     }
 }
